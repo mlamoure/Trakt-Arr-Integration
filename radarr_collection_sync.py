@@ -13,6 +13,7 @@ TRAKT_FORCE_RESYNC = False #Set to True to delete all movies from Trakt's collec
 CHUNK_SIZE = 1000 #number of movies to send to Trakt in a single API paylod
 USE_RADARR_COLLECTED_DATE = True #If False, Trakt will use its existing collected date if available (won't work on resync) or the item's release date
 
+SYNC_TAG = ""
 ########################################################################################
 #We rely on Radarr for Trakt oAuth. This requires you to have a Trakt connection already setup in Radarr and authenticated
 #The below Trakt Client ID should not need to be changed, but you can verify if it is still accurate by checking the one found at 
@@ -33,7 +34,7 @@ trakt_notification = next(notification for notification in radarr_notifications 
 access_token = next(token for token in trakt_notification['fields'] if token['name'] == "accessToken")
 TRAKT_BEARER_TOKEN = access_token['value'] 
 
-trakt_api_url = 'https://api.trakt.tv/sync/collection'
+trakt_api_url = 'https://api.trakt.tv/sync/list'
 trakt_headers = {"Content-Type": "application/json", "Authorization": "Bearer {}".format(TRAKT_BEARER_TOKEN),
                 "trakt-api-version": "2", "trakt-api-key": TRAKT_CLIENT_ID, 'User-Agent': 'Radarr Trakt Collection Syncer v0.1'}
 
@@ -57,7 +58,7 @@ radarr_movies = requests.get(radarr_api_url).json()
 
 movie_list = []
 print('Pushing all downloaded movies from Radarr into your Trakt collection')
-downloaded_movies = (movie for movie in radarr_movies if movie['sizeOnDisk'] > 0)
+downloaded_movies = (movie for movie in radarr_movies if movie['sizeOnDisk'] > 0 and SYNC_TAG in movie['tags'])
 for movie in downloaded_movies:
     title = movie['title']
     year = movie.get('year', None)
