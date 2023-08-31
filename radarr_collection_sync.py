@@ -34,7 +34,7 @@ trakt_notification = next(notification for notification in radarr_notifications 
 access_token = next(token for token in trakt_notification['fields'] if token['name'] == "accessToken")
 TRAKT_BEARER_TOKEN = access_token['value'] 
 
-trakt_api_url = 'https://api.trakt.tv/sync/list'
+trakt_api_url = 'https://api.trakt.tv/users/{}/lists/{}/items'.format(auth_user, CUSTOM_LIST)
 trakt_headers = {"Content-Type": "application/json", "Authorization": "Bearer {}".format(TRAKT_BEARER_TOKEN),
                 "trakt-api-version": "2", "trakt-api-key": TRAKT_CLIENT_ID, 'User-Agent': 'Radarr Trakt Collection Syncer v0.1'}
 
